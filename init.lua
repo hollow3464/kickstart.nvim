@@ -234,6 +234,92 @@ end
 local rtp = vim.opt.rtp
 rtp:prepend(lazypath)
 
+-- [[ Logging ]]
+--- @class LogOptions
+--- @field namespace string namespace the log belongs to
+
+local logging = {}
+
+--- @param msg string|table<string> log message (either single line or array
+---                                 of lines to accept vim.inspect() output)
+--- @param level integer|nil log level defined in vim.log.levels
+--- @param options LogOptions allows us to set different logging namespaces
+logging.log = function(msg, level, options)
+  -- extracting a namespace to determine which buffer to log to
+  local opts = options or {}
+  local ns = opts.namespace or 'default'
+
+  -- find the corresponding buffer and if there is no such buffer, create one
+  local buffer_name = logging.buffer_name(ns)
+  local buffer = logging.find_log_buffer(buffer_name)
+  if buffer == nil then
+    buffer = vim.api.nvim_create_buf(true, true)
+    vim.api.nvim_buf_set_name(buffer, buffer_name)
+  end
+
+  -- transform the integer log level to its string representation.
+  local level_str = 'INFO'
+  for l, i in pairs(vim.log.levels) do
+    if level == i then
+      level_str = l
+    end
+  end
+
+  -- ensure `msg` is always a table to make processing simpler
+  if type(msg) == 'string' then
+    msg = { msg }
+  end
+
+  -- Split `msg` on newlines, since nvim_buf_set_lines() does not like them
+  msg = vim.tbl_map(function(line)
+    return vim.split(line, '\n')
+  end, msg)
+  msg = vim.iter(msg):flatten(1):totable()
+
+  -- for each line add the log level
+  local complete_msg = vim.tbl_map(function(line)
+    return '[' .. level_str .. '] ' .. line
+  end, msg)
+
+  -- actually add the lines to the buffer
+  vim.api.nvim_buf_set_lines(buffer, -1, -1, true, complete_msg)
+end
+
+--- @param namespace string
+logging.buffer_name = function(namespace)
+  return 'LOG-' .. namespace
+end
+
+--- @param buffer_name string
+logging.find_log_buffer = function(buffer_name)
+  local buffer_list = vim.api.nvim_list_bufs()
+  for _, buf_num in ipairs(buffer_list) do
+    local name = vim.fn.bufname(buf_num)
+    if name == buffer_name then
+      return buf_num
+    end
+  end
+  return nil
+end
+
+--- @param namespace string
+logging.create_logger = function(namespace)
+  local opts = { namespace = namespace }
+  local logging_func_for = function(level)
+    return function(msg)
+      logging.log(msg, level, opts)
+    end
+  end
+
+  return {
+    trace = logging_func_for(vim.log.levels.TRACE),
+    debug = logging_func_for(vim.log.levels.DEBUG),
+    info = logging_func_for(vim.log.levels.INFO),
+    warn = logging_func_for(vim.log.levels.WARN),
+    error = logging_func_for(vim.log.levels.ERROR),
+  }
+end
+
 -- [[ Configure and install plugins ]]
 --
 --  To check the current status of your plugins, run
@@ -672,7 +758,8 @@ require('lazy').setup({
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
         -- clangd = {},
-        -- gopls = {},
+        gopls = {},
+        templ = {},
         -- pyright = {},
         -- rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
@@ -682,7 +769,39 @@ require('lazy').setup({
         --
         -- But for many setups, the LSP (`ts_ls`) will work just fine
         -- ts_ls = {},
-        --
+        twiggy_language_server = {
+          settings = {
+            twiggy = {
+              framework = 'twig',
+              vanillaTwigEnvironmentPath = 'bin/twig',
+            },
+          },
+        },
+        emmet_language_server = {
+          filetypes = {
+            'twig',
+            'php',
+            'templ',
+            'blade',
+            'css',
+            'eruby',
+            'html',
+            'htmldjango',
+            'javascriptreact',
+            'less',
+            'pug',
+            'sass',
+            'scss',
+            'typescriptreact',
+            'htmlangular',
+          },
+          init_options = {
+            includeLanguages = {
+              'php',
+              'twig',
+            },
+          },
+        },
 
         lua_ls = {
           -- cmd = { ... },
@@ -719,6 +838,8 @@ require('lazy').setup({
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
+      local lsp_logger = logging.create_logger '~/.local/state/lsp.debug.log'
+
       require('mason-lspconfig').setup {
         ensure_installed = {}, -- explicitly set to an empty table (Kickstart populates installs via mason-tool-installer)
         automatic_installation = false,
@@ -729,6 +850,9 @@ require('lazy').setup({
             -- by the server configuration above. Useful when disabling
             -- certain features of an LSP (for example, turning off formatting for ts_ls)
             server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
+
+            lsp_logger.info(string.format('server %s filetypes - %s', server_name, table.concat(server.filetypes, ', ')))
+
             require('lspconfig')[server_name].setup(server)
           end,
         },
@@ -894,7 +1018,7 @@ require('lazy').setup({
       -- Load the colorscheme here.
       -- Like many other themes, this one has different styles, and you could load
       -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
-      vim.cmd.colorscheme 'tokyonight-night'
+      -- vim.cmd.colorscheme 'tokyonight-night'
     end,
   },
 
@@ -973,18 +1097,18 @@ require('lazy').setup({
   --  Here are some example plugins that I've included in the Kickstart repository.
   --  Uncomment any of the lines below to enable them (you will need to restart nvim).
   --
-  -- require 'kickstart.plugins.debug',
-  -- require 'kickstart.plugins.indent_line',
-  -- require 'kickstart.plugins.lint',
-  -- require 'kickstart.plugins.autopairs',
+  require 'kickstart.plugins.debug',
+  require 'kickstart.plugins.indent_line',
+  require 'kickstart.plugins.lint',
+  require 'kickstart.plugins.autopairs',
   -- require 'kickstart.plugins.neo-tree',
-  -- require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
+  require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
 
   -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
   --    This is the easiest way to modularize your config.
   --
   --  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
-  -- { import = 'custom.plugins' },
+  { import = 'custom.plugins' },
   --
   -- For additional information with loading, sourcing and examples see `:help lazy.nvim-🔌-plugin-spec`
   -- Or use telescope!
@@ -1011,6 +1135,8 @@ require('lazy').setup({
     },
   },
 })
+
+vim.lsp.set_log_level 'debug'
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
