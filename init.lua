@@ -91,7 +91,7 @@ vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
 -- Set to true if you have a Nerd Font installed and selected in the terminal
-vim.g.have_nerd_font = false
+vim.g.have_nerd_font = true
 
 -- [[ Setting options ]]
 -- See `:help vim.o`
@@ -102,7 +102,7 @@ vim.g.have_nerd_font = false
 vim.o.number = true
 -- You can also add relative line numbers, to help with jumping.
 --  Experiment for yourself to see if you like it!
--- vim.o.relativenumber = true
+vim.o.relativenumber = true
 
 -- Enable mouse mode, can be useful for resizing splits for example!
 vim.o.mouse = 'a'
@@ -233,92 +233,6 @@ end
 ---@type vim.Option
 local rtp = vim.opt.rtp
 rtp:prepend(lazypath)
-
--- [[ Logging ]]
---- @class LogOptions
---- @field namespace string namespace the log belongs to
-
-local logging = {}
-
---- @param msg string|table<string> log message (either single line or array
----                                 of lines to accept vim.inspect() output)
---- @param level integer|nil log level defined in vim.log.levels
---- @param options LogOptions allows us to set different logging namespaces
-logging.log = function(msg, level, options)
-  -- extracting a namespace to determine which buffer to log to
-  local opts = options or {}
-  local ns = opts.namespace or 'default'
-
-  -- find the corresponding buffer and if there is no such buffer, create one
-  local buffer_name = logging.buffer_name(ns)
-  local buffer = logging.find_log_buffer(buffer_name)
-  if buffer == nil then
-    buffer = vim.api.nvim_create_buf(true, true)
-    vim.api.nvim_buf_set_name(buffer, buffer_name)
-  end
-
-  -- transform the integer log level to its string representation.
-  local level_str = 'INFO'
-  for l, i in pairs(vim.log.levels) do
-    if level == i then
-      level_str = l
-    end
-  end
-
-  -- ensure `msg` is always a table to make processing simpler
-  if type(msg) == 'string' then
-    msg = { msg }
-  end
-
-  -- Split `msg` on newlines, since nvim_buf_set_lines() does not like them
-  msg = vim.tbl_map(function(line)
-    return vim.split(line, '\n')
-  end, msg)
-  msg = vim.iter(msg):flatten(1):totable()
-
-  -- for each line add the log level
-  local complete_msg = vim.tbl_map(function(line)
-    return '[' .. level_str .. '] ' .. line
-  end, msg)
-
-  -- actually add the lines to the buffer
-  vim.api.nvim_buf_set_lines(buffer, -1, -1, true, complete_msg)
-end
-
---- @param namespace string
-logging.buffer_name = function(namespace)
-  return 'LOG-' .. namespace
-end
-
---- @param buffer_name string
-logging.find_log_buffer = function(buffer_name)
-  local buffer_list = vim.api.nvim_list_bufs()
-  for _, buf_num in ipairs(buffer_list) do
-    local name = vim.fn.bufname(buf_num)
-    if name == buffer_name then
-      return buf_num
-    end
-  end
-  return nil
-end
-
---- @param namespace string
-logging.create_logger = function(namespace)
-  local opts = { namespace = namespace }
-  local logging_func_for = function(level)
-    return function(msg)
-      logging.log(msg, level, opts)
-    end
-  end
-
-  return {
-    trace = logging_func_for(vim.log.levels.TRACE),
-    debug = logging_func_for(vim.log.levels.DEBUG),
-    info = logging_func_for(vim.log.levels.INFO),
-    warn = logging_func_for(vim.log.levels.WARN),
-    error = logging_func_for(vim.log.levels.ERROR),
-  }
-end
 
 -- [[ Configure and install plugins ]]
 --
@@ -741,12 +655,6 @@ require('lazy').setup({
         },
       }
 
-      -- LSP servers and clients are able to communicate to each other what features they support.
-      --  By default, Neovim doesn't support everything that is in the LSP specification.
-      --  When you add blink.cmp, luasnip, etc. Neovim now has *more* capabilities.
-      --  So, we create new capabilities with blink.cmp, and then broadcast that to the servers.
-      local capabilities = require('blink.cmp').get_lsp_capabilities()
-
       -- Enable the following language servers
       --  Feel free to add/remove any LSPs that you want here. They will automatically be installed.
       --
@@ -756,68 +664,10 @@ require('lazy').setup({
       --  - capabilities (table): Override fields in capabilities. Can be used to disable certain LSP features.
       --  - settings (table): Override the default settings passed when initializing the server.
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
-      local servers = {
-        -- clangd = {},
-        gopls = {},
-        templ = {},
-        -- pyright = {},
-        -- rust_analyzer = {},
-        -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
-        --
-        -- Some languages (like typescript) have entire language plugins that can be useful:
-        --    https://github.com/pmizio/typescript-tools.nvim
-        --
-        -- But for many setups, the LSP (`ts_ls`) will work just fine
-        -- ts_ls = {},
-        twiggy_language_server = {
-          settings = {
-            twiggy = {
-              framework = 'twig',
-              vanillaTwigEnvironmentPath = 'bin/twig',
-            },
-          },
-        },
-        emmet_language_server = {
-          filetypes = {
-            'twig',
-            'php',
-            'templ',
-            'blade',
-            'css',
-            'eruby',
-            'html',
-            'htmldjango',
-            'javascriptreact',
-            'less',
-            'pug',
-            'sass',
-            'scss',
-            'typescriptreact',
-            'htmlangular',
-          },
-          init_options = {
-            includeLanguages = {
-              'php',
-              'twig',
-            },
-          },
-        },
+      --
+      --
 
-        lua_ls = {
-          -- cmd = { ... },
-          -- filetypes = { ... },
-          -- capabilities = {},
-          settings = {
-            Lua = {
-              completion = {
-                callSnippet = 'Replace',
-              },
-              -- You can toggle below to ignore Lua_LS's noisy `missing-fields` warnings
-              -- diagnostics = { disable = { 'missing-fields' } },
-            },
-          },
-        },
-      }
+      local servers = require 'lsp.servers'
 
       -- Ensure the servers and tools above are installed
       --
@@ -836,27 +686,20 @@ require('lazy').setup({
       vim.list_extend(ensure_installed, {
         'stylua', -- Used to format Lua code
       })
+
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
-      local lsp_logger = logging.create_logger '~/.local/state/lsp.debug.log'
+      -- LSP servers and clients are able to communicate to each other what features they support.
+      --  By default, Neovim doesn't support everything that is in the LSP specification.
+      --  When you add blink.cmp, luasnip, etc. Neovim now has *more* capabilities.
+      --  So, we create new capabilities with blink.cmp, and then broadcast that to the servers.
+      local capabilities = require('blink.cmp').get_lsp_capabilities()
 
-      require('mason-lspconfig').setup {
-        ensure_installed = {}, -- explicitly set to an empty table (Kickstart populates installs via mason-tool-installer)
-        automatic_installation = false,
-        handlers = {
-          function(server_name)
-            local server = servers[server_name] or {}
-            -- This handles overriding only values explicitly passed
-            -- by the server configuration above. Useful when disabling
-            -- certain features of an LSP (for example, turning off formatting for ts_ls)
-            server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
-
-            lsp_logger.info(string.format('server %s filetypes - %s', server_name, table.concat(server.filetypes, ', ')))
-
-            require('lspconfig')[server_name].setup(server)
-          end,
-        },
-      }
+      for server, config in pairs(servers) do
+        config.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
+        vim.lsp.config(server, config)
+        vim.lsp.enable(server)
+      end
     end,
   },
 
@@ -880,7 +723,7 @@ require('lazy').setup({
         -- Disable "format_on_save lsp_fallback" for languages that don't
         -- have a well standardized coding style. You can add additional
         -- languages here or re-enable it for the disabled ones.
-        local disable_filetypes = { c = true, cpp = true }
+        local disable_filetypes = { c = true, cpp = true, blade = true, twig = true, html = true }
         if disable_filetypes[vim.bo[bufnr].filetype] then
           return nil
         else
@@ -890,6 +733,12 @@ require('lazy').setup({
           }
         end
       end,
+      formatters = {
+        mago = {
+          command = 'mago',
+          args = { 'format', '-i' },
+        },
+      },
       formatters_by_ft = {
         lua = { 'stylua' },
         -- Conform can also run multiple formatters sequentially
@@ -897,6 +746,17 @@ require('lazy').setup({
         --
         -- You can use 'stop_after_first' to run the first available formatter from the list
         -- javascript = { "prettierd", "prettier", stop_after_first = true },
+        twig = { 'djlint' },
+        jinja = { 'djlint' },
+        vue = { 'biome' },
+        typescript = { 'biome' },
+        javascript = { 'biome' },
+        javascriptreact = { 'biome' },
+        typescriptreact = { 'biome' },
+        json = { 'biome' },
+        toml = { 'taplo' },
+        php = { 'mago' },
+        blade = { 'blade-formatter', 'mago' },
       },
     },
   },
@@ -923,12 +783,12 @@ require('lazy').setup({
           -- `friendly-snippets` contains a variety of premade snippets.
           --    See the README about individual language/framework/plugin snippets:
           --    https://github.com/rafamadriz/friendly-snippets
-          -- {
-          --   'rafamadriz/friendly-snippets',
-          --   config = function()
-          --     require('luasnip.loaders.from_vscode').lazy_load()
-          --   end,
-          -- },
+          {
+            'rafamadriz/friendly-snippets',
+            config = function()
+              require('luasnip.loaders.from_vscode').lazy_load()
+            end,
+          },
         },
         opts = {},
       },
@@ -974,7 +834,13 @@ require('lazy').setup({
       completion = {
         -- By default, you may press `<c-space>` to show the documentation.
         -- Optionally, set `auto_show = true` to show the documentation after a delay.
-        documentation = { auto_show = false, auto_show_delay_ms = 500 },
+        documentation = { auto_show = true, auto_show_delay_ms = 500 },
+        menu = {
+          auto_show = true,
+          draw = {
+            treesitter = { 'lsp' },
+          },
+        },
       },
 
       sources = {
@@ -993,7 +859,7 @@ require('lazy').setup({
       -- the rust implementation via `'prefer_rust_with_warning'`
       --
       -- See :h blink-cmp-config-fuzzy for more information
-      fuzzy = { implementation = 'lua' },
+      fuzzy = { implementation = 'prefer_rust' },
 
       -- Shows a signature help window while you type arguments for a function
       signature = { enabled = true },
@@ -1136,7 +1002,7 @@ require('lazy').setup({
   },
 })
 
-vim.lsp.set_log_level 'debug'
+-- vim.lsp.set_log_level 'debug'
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
