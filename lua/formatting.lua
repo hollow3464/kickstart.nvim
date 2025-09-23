@@ -23,7 +23,7 @@ return { -- Autoformat
         return nil
       else
         return {
-          timeout_ms = 500,
+          timeout_ms = 1000,
           lsp_format = 'fallback',
         }
       end
@@ -51,8 +51,8 @@ return { -- Autoformat
       json = { 'biome' },
       jsonc = { 'biome' },
       toml = { 'taplo' },
-      php = { 'blade-formatter', 'mago' },
-      blade = { 'blade-formatter', 'mago' },
+      php = { 'rustywind', 'blade-formatter', 'mago' },
+      blade = { 'rustywind', 'blade-formatter', 'mago' },
     },
   },
 }
