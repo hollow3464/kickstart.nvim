@@ -39,20 +39,13 @@ return {
     },
   },
   {
-    'zenbones-theme/zenbones.nvim',
-    -- Optionally install Lush. Allows for more configuration or extending the colorscheme
-    -- If you don't want to install lush, make sure to set g:zenbones_compat = 1
-    -- In Vim, compat mode is turned on as Lush only works in Neovim.
-    dependencies = 'rktjmp/lush.nvim',
-    lazy = false,
+    'ellisonleao/gruvbox.nvim',
     priority = 1000,
-    -- you can set set configuration options here
     config = function()
-      vim.g.zenbones_darken_comments = 45
-      vim.cmd.colorscheme 'zenbones'
-      vim.g.zenbones_lightness = 'bright'
-      vim.g.zenbones_darken_noncurrent_window = true
+      require('gruvbox').setup {}
+      vim.cmd.colorscheme 'gruvbox'
     end,
+    opts = ...,
   },
   -- lazy.nvim
   {
@@ -62,10 +55,10 @@ return {
       -- add any options here
       -- for example:
       bucket = {
-        hostname = 'work-laptop',
+        hostname = 'warmachine',
       },
       aw_server = {
-        host = '127.0.0.1',
+        host = '172.27.0.1',
         port = 5600,
       },
     },
@@ -87,22 +80,6 @@ return {
     keys = {
       { '<leader>\\', ':UndotreeToggle<CR>', desc = 'Undo tree reveal', silent = true },
     },
-  },
-  {
-    'monkoose/neocodeium',
-    event = 'VeryLazy',
-    config = function()
-      local neocodeium = require 'neocodeium'
-      neocodeium.setup {
-        filetypes = {
-          TelescopePrompt = false,
-          ['dap-repl'] = false,
-        },
-      }
-
-      vim.keymap.set('i', '<C-g>', neocodeium.accept)
-      vim.keymap.set('i', '<A-c>', neocodeium.clear)
-    end,
   },
   {
     -- Add the Laravel.nvim plugin which gives the ability to run Artisan commands
@@ -128,20 +105,20 @@ return {
       features = { null_ls = { enable = false } },
     },
   },
-  {
-    'windwp/nvim-ts-autotag',
-    config = function()
-      require('nvim-ts-autotag').setup {}
-    end,
-    -- Also override individual filetype configs, these take priority.
-    -- Empty by default, useful if one of the "opts" global settings
-    -- doesn't work well in a specific filetype
-    -- per_filetype = {
-    --   ['html'] = {
-    --     enable_close = false,
-    --   },
-    -- },
-  },
+  -- {
+  --   'windwp/nvim-ts-autotag',
+  --   config = function()
+  --     require('nvim-ts-autotag').setup {}
+  --   end,
+  --   -- Also override individual filetype configs, these take priority.
+  --   -- Empty by default, useful if one of the "opts" global settings
+  --   -- doesn't work well in a specific filetype
+  --   -- per_filetype = {
+  --   --   ['html'] = {
+  --   --     enable_close = false,
+  --   --   },
+  --   -- },
+  -- },
   {
     'nvim-treesitter/nvim-treesitter-context',
     config = function()
@@ -159,6 +136,41 @@ return {
         separator = nil,
         zindex = 20, -- The Z-index of the context window
         on_attach = nil, -- (fun(buf: integer): boolean) return false to disable attaching
+      }
+    end,
+  },
+  -- {
+  --   'monkoose/neocodeium',
+  --   event = 'VeryLazy',
+  --   config = function()
+  --     local neocodeium = require 'neocodeium'
+  --     neocodeium.setup {
+  --       filetypes = {
+  --         TelescopePrompt = false,
+  --         ['dap-repl'] = false,
+  --       },
+  --     }
+  --
+  --     vim.keymap.set('i', '<C-g>', neocodeium.accept)
+  --     vim.keymap.set('i', '<A-c>', neocodeium.clear)
+  --   end,
+  -- },
+  {
+    'supermaven-inc/supermaven-nvim',
+    config = function()
+      require('supermaven-nvim').setup {
+        keymaps = {
+          accept_suggestion = '<C-g>',
+          accept_word = '<C-j>',
+          clear_suggestion = '<C-]>',
+        },
+        ignore_filetypes = { cpp = true, TelescopePrompt = true, ['dap-repl'] = true }, -- or { "cpp", }
+        log_level = 'info', -- set to "off" to disable logging completely
+        disable_inline_completion = false, -- disables inline completion for use with cmp
+        disable_keymaps = false, -- disables built in keymaps for more manual control
+        condition = function()
+          return false
+        end, -- condition to check for stopping supermaven, `true` means to stop supermaven when the condition is true.
       }
     end,
   },
