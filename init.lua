@@ -89,7 +89,7 @@ P.S. You can delete this when you're done too. It's your config now! :)
 --  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
-
+vim.o.wrap = false
 -- Set to true if you have a Nerd Font installed and selected in the terminal
 vim.g.have_nerd_font = true
 
@@ -167,8 +167,15 @@ vim.o.scrolloff = 10
 vim.o.confirm = true
 
 vim.filetype.add {
+  extension = {
+    twig = 'twig',
+    templ = 'templ',
+    pug = 'pug',
+  },
   pattern = {
     ['.*/*Caddyfile'] = 'caddy',
+    ['%.env.*'] = 'dotenv',
+    ['.*/devcontainer.json'] = 'jsonc',
   },
 }
 
@@ -701,6 +708,9 @@ require('lazy').setup({
       --  So, we create new capabilities with blink.cmp, and then broadcast that to the servers.
       local capabilities = require('blink.cmp').get_lsp_capabilities()
 
+      -- Add phptools
+      -- servers.phptools = { filetypes = { 'php', 'php_only', 'blade' } }
+
       for server, config in pairs(servers) do
         config.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
         vim.lsp.config(server, config)
@@ -952,6 +962,8 @@ require('lazy').setup({
     },
   },
 })
+
+require 'autocmds'
 
 -- vim.lsp.set_log_level 'debug'
 
