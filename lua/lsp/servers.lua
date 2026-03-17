@@ -2,15 +2,17 @@ local vue = require 'lsp.vue'
 return {
   -- clangd = {},
   -- pyright = {},
+  hyprls = {},
   basedpyright = {},
   -- rust_analyzer = {},
   gopls = {},
   templ = {},
   intelephense = {
     filetypes = { 'php', 'php_only', 'blade' },
+    settings = {},
   },
   markdown_oxide = {},
-  -- cssls = {},
+  cssls = {},
   ruff = {},
   -- ty = {},
   dockerls = {},
@@ -19,6 +21,7 @@ return {
   bashls = {},
   biome = {},
   jsonls = {},
+  yamlls = {},
   html = {
     filetypes = { 'html', 'twig', 'jinja', 'blade' },
   },
