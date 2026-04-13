@@ -3,6 +3,7 @@
 --
 -- See the kickstart.nvim README for more information
 return {
+  { 'charlespascoe/vim-go-syntax' },
   {
     'stevearc/oil.nvim',
     ---@module 'oil'
@@ -62,16 +63,6 @@ return {
         port = 5600,
       },
     },
-  },
-  {
-    'RedsXDD/neopywal.nvim',
-    name = 'neopywal',
-    lazy = false,
-    priority = 1000,
-    opts = {},
-    config = function()
-      -- vim.cmd.colorscheme 'neopywal'
-    end,
   },
   {
     'mbbill/undotree',
@@ -173,5 +164,64 @@ return {
         end, -- condition to check for stopping supermaven, `true` means to stop supermaven when the condition is true.
       }
     end,
+  },
+  {
+    'bjarneo/aether.nvim',
+    branch = 'v3',
+    name = 'aether',
+    priority = 1000,
+    opts = {
+      colors = {
+        bg = '#14110f',
+        dark_bg = '#0f0d0b',
+        darker_bg = '#0a0908',
+        lighter_bg = '#2c2927',
+
+        fg = '#cd906a',
+        dark_fg = '#ce8557',
+        light_fg = '#d8d3cf',
+        bright_fg = '#ddd8d5',
+        muted = '#795e4d',
+
+        red = '#bf8b69',
+        yellow = '#cc9a7a',
+        orange = '#c99c80',
+        green = '#cd906a',
+        cyan = '#d4a384',
+        blue = '#ce8557',
+        purple = '#c89677',
+        brown = '#795e4d',
+
+        bright_red = '#ddbca7',
+        bright_yellow = '#e7ccba',
+        bright_green = '#e7c3ac',
+        bright_cyan = '#ebb796',
+        bright_blue = '#e99865',
+        bright_purple = '#e2a985',
+
+        accent = '#ce8557',
+        cursor = '#d1cbc7',
+        foreground = '#d1cbc7',
+        background = '#14110f',
+        selection = '#2c2927',
+        selection_foreground = '#d1cbc7',
+        selection_background = '#2c2927',
+      },
+    },
+    -- set up hot reload
+    config = function(_, opts)
+      require('aether').setup(opts)
+      -- vim.cmd.colorscheme 'aether'
+      -- require('aether.hotreload').setup()
+    end,
+  },
+  {
+    'MeanderingProgrammer/render-markdown.nvim',
+    dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-mini/mini.nvim' }, -- if you use the mini.nvim suite
+    -- dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-mini/mini.icons' },        -- if you use standalone mini plugins
+    -- dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-tree/nvim-web-devicons' }, -- if you prefer nvim-web-devicons
+    ---@module 'render-markdown'
+    ---@type render.md.UserConfig
+    opts = {},
   },
 }
