@@ -15,7 +15,7 @@ return {
   biome = {},
   jsonls = {},
   yamlls = {},
-  html = { filetypes = { 'html', 'twig', 'jinja', 'blade' } },
+  html = { filetypes = { 'html', 'twig', 'jinja', 'blade', 'php' } },
   lua_ls = {
     settings = {
       Lua = { completion = { callSnippet = 'Replace' } },
