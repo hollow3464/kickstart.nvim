@@ -9,11 +9,11 @@ local setup = function()
   lint.linters_by_ft = {
     markdown = { 'markdownlint' },
     php = { 'mago_lint', 'mago_analyze' },
-    typescript = { 'eslint_d' },
-    typescriptreact = { 'eslint_d' },
-    javascript = { 'eslint_d' },
-    javascriptreact = { 'eslint_d' },
-    -- vue = { 'eslint_d' },
+    typescript = { 'oxlint' },
+    typescriptreact = { 'oxlint' },
+    javascript = { 'oxlint' },
+    javascriptreact = { 'oxlint' },
+    vue = { 'oxlint' },
   }
 
   -- Create autocommand which carries out the actual linting
