@@ -5,15 +5,20 @@ local setup = function()
 
   -- lint.linters.mago_linter = require 'lint.mago-linter'
   -- lint.linters.mago_analyzer = require 'lint.mago-analyzer'
+  --
+  lint.linters.docker_compose_linter = {}
 
   lint.linters_by_ft = {
-    markdown = { 'markdownlint' },
-    php = { 'mago_lint', 'mago_analyze' },
+    -- markdown = { 'markdownlint' },
+    php = { 'mago_lint' },
     typescript = { 'oxlint' },
     typescriptreact = { 'oxlint' },
     javascript = { 'oxlint' },
     javascriptreact = { 'oxlint' },
     vue = { 'oxlint' },
+    dockerfile = { 'hadolint' },
+    -- yaml = { 'yamllint' },
+    cpp = { 'cpplint' },
   }
 
   -- Create autocommand which carries out the actual linting
