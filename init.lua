@@ -1,9 +1,10 @@
 -- vim.lsp.set_log_level 'debug'
-
 require 'config.options'
 require 'config.keymaps'
 require 'config.filetypes'
 require 'config.autocmds'
+
+require('vim._core.ui2').enable()
 
 require 'plugins'
 
