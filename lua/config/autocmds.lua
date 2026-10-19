@@ -24,3 +24,11 @@ vim.api.nvim_create_autocmd('BufReadCmd', {
     vim.cmd 'let tobedeleted = bufnr(\'%\') | b# | exe "bd! " . tobedeleted'
   end,
 })
+
+vim.api.nvim_create_autocmd('InsertEnter', {
+  desc = 'Autopairs',
+  group = vim.api.nvim_create_augroup('autopairs', { clear = true }),
+  callback = function()
+    require('nvim-autopairs').setup {}
+  end,
+})
