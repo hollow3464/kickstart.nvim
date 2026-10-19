@@ -3,7 +3,7 @@ return {
     twiggy = {
       framework = 'twig',
       vanillaTwigEnvironmentPath = 'bin/twig',
-      phpExecutable = '/usr/bin/php',
+      phpExecutable = 'php',
       diagnostics = {
         twigCsFixer = false,
       },

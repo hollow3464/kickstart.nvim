@@ -1,8 +1,8 @@
-local vue = require 'plugins.lsp.servers.vue'
-
 return {
   hyprls = {},
-  gopls = {},
+  gopls = {
+    filetypes = { 'go', 'gomod', 'gowork', 'templ' },
+  },
   templ = {},
   markdown_oxide = {},
   cssls = {},
@@ -12,7 +12,6 @@ return {
   jinja_lsp = {},
   taplo = {},
   bashls = {},
-  biome = {},
   jsonls = {},
   yamlls = {},
   html = { filetypes = { 'html', 'twig', 'jinja', 'blade', 'php' } },
@@ -21,10 +20,13 @@ return {
       Lua = { completion = { callSnippet = 'Replace' } },
     },
   },
-  twiggy_language_server = require 'plugins.lsp.servers.twiggy',
-  emmet_language_server = require 'plugins.lsp.servers.emmet',
-  tailwindcss = require 'plugins.lsp.servers.tailwind',
-  ts_ls = vue.ts_ls,
-  -- vtsls = vue.vtsls,
-  vue_ls = vue.vue_ls,
+  ruby_lsp = {},
+  rust_analyzer = {},
+  just = {},
+  docker_compose_language_service = {},
+  docker_language_server = {},
+  phpantom_lsp = { filetypes = { 'php', 'blade' } },
+  tinymist = {},
+  clangd = {},
+  mesonlsp = {},
 }
