@@ -67,7 +67,25 @@ dap.listeners.after.event_initialized['dapui_config'] = dapui.open
 dap.listeners.before.event_terminated['dapui_config'] = dapui.close
 dap.listeners.before.event_exited['dapui_config'] = dapui.close
 
-dap.defaults.php.exception_breakpoints = { 'Notice', 'Warning', 'Error', 'Exception' }
+local debug_php_internal = string.lower(os.getenv 'NVIM_DEBUGGER_PHP_BREAKPOINTS' or '')
+
+if debug_php_internal then
+  local php_breakpoints = {}
+  if string.find(debug_php_internal, 'notice') then
+    table.insert(php_breakpoints, 'Notice')
+  end
+  if string.find(debug_php_internal, 'warning') then
+    table.insert(php_breakpoints, 'Warning')
+  end
+  if string.find(debug_php_internal, 'error') then
+    table.insert(php_breakpoints, 'Error')
+  end
+  if string.find(debug_php_internal, 'exception') then
+    table.insert(php_breakpoints, 'Exception')
+  end
+
+  dap.defaults.php.exception_breakpoints = php_breakpoints
+end
 
 -- Install golang specific config
 require('dap-go').setup {
