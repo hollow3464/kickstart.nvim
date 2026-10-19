@@ -7,7 +7,7 @@ local formatters = {
   --
   -- You can use 'stop_after_first' to run the first available formatter from the list
   -- javascript = { "oxfmt", "prettier", stop_after_first = true },
-  markdown = { 'markdownlint', 'oxfmt' },
+  markdown = { 'markdownlint' },
   xml = { 'xmlformatter' },
   html = { 'djlint', 'rustywind' },
   twig = { 'djlint', 'rustywind' },
@@ -21,10 +21,12 @@ local formatters = {
   jsonc = { 'oxfmt' },
   toml = { 'taplo' },
   php = { 'rustywind', 'mago' },
-  blade = { 'rustywind', 'blade-formatter', 'mago' },
+  blade = { 'rustywind', 'mago' },
   hcl = { 'hclfmt' },
   sql = { 'sqlfmt' },
   yaml = { 'oxfmt' },
+  typst = { 'typstyle' },
+  cpp = { 'clang-format' },
 }
 
 local opts = {
