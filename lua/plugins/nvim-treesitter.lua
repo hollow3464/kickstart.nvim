@@ -1,17 +1,7 @@
 vim.pack.add { 'https://github.com/nvim-treesitter/nvim-treesitter-context' }
-vim.pack.add({ { src = 'https://codeberg.org/chardoncs/nvim-treesitter', name = 'nvim-treesitter' } }, {
-  build = ':TSUpdate',
-})
+vim.pack.add { 'https://github.com/romus204/tree-sitter-manager.nvim' }
 
-vim.api.nvim_create_autocmd('PackChanged', {
-  callback = function(ev)
-    local name, kind = ev.data.spec.name, ev.data.kind
-    if name == 'nvim-treesitter' and kind == 'update' then
-      vim.cmd 'TSUpdate'
-    end
-  end,
-})
-
+require('tree-sitter-manager').setup()
 require('treesitter-context').setup {
   enable = true, -- Enable this plugin (Can be enabled/disabled later via commands)
   multiwindow = false, -- Enable multiwindow support.
