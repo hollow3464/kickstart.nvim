@@ -16,6 +16,12 @@ vim.pack.add {
   'https://github.com/selimacerbas/live-server.nvim',
   'https://github.com/selimacerbas/markdown-preview.nvim',
   'https://github.com/chomosuke/typst-preview.nvim',
+
+  'https://github.com/MunifTanjim/nui.nvim',
+  'https://github.com/nvim-lua/plenary.nvim',
+  'https://github.com/nvim-neotest/nvim-nio',
+
+  'https://github.com/adalessa/laravel.nvim',
 }
 
 require('oil').setup {}

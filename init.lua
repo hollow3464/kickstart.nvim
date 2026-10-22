@@ -10,5 +10,11 @@ require 'plugins'
 
 vim.cmd.colorscheme 'gruvbox'
 
+local laravel = require 'laravel'
+laravel.setup {
+  features = { pickers = { provider = 'telescope' } },
+}
+vim.g.Laravel = laravel
+
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
