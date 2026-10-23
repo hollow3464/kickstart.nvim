@@ -38,6 +38,7 @@ local formatters = {
   yaml = { 'oxfmt' },
   typst = { 'typstyle' },
   cpp = { 'clang-format' },
+  cmake = { 'cmake_format' },
 }
 
 local opts = {
