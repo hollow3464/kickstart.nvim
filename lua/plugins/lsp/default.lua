@@ -29,4 +29,5 @@ return {
   tinymist = {},
   clangd = {},
   mesonlsp = {},
+  cmake = {},
 }
