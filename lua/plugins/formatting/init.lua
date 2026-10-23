@@ -1,5 +1,16 @@
 vim.pack.add { 'https://github.com/stevearc/conform.nvim' }
 
+local custom_formatters = {
+  ludtwig = {
+    command = 'ludtwig',
+    args = { '--fix', '$FILENAME' },
+  },
+  cmake_format = {
+    command = 'cmake-format',
+    args = {},
+  },
+}
+
 local formatters = {
   lua = { 'stylua' },
   -- Conform can also run multiple formatters sequentially
