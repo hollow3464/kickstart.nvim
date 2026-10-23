@@ -1,7 +1,7 @@
 vim.pack.add { 'https://github.com/nvim-treesitter/nvim-treesitter-context' }
-vim.pack.add { 'https://github.com/romus204/tree-sitter-manager.nvim' }
+vim.pack.add { 'https://github.com/nvim-treesitter/nvim-treesitter' }
 
-require('tree-sitter-manager').setup()
+require('nvim-treesitter').setup()
 require('treesitter-context').setup {
   enable = true, -- Enable this plugin (Can be enabled/disabled later via commands)
   multiwindow = false, -- Enable multiwindow support.
