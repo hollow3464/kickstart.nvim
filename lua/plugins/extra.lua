@@ -23,6 +23,7 @@ vim.pack.add {
 
   'https://github.com/adalessa/laravel.nvim',
   'https://github.com/numToStr/Comment.nvim',
+  'https://github.com/OlegGulevskyy/better-ts-errors.nvim',
 }
 
 require('oil').setup {}
@@ -49,6 +50,7 @@ require('todo-comments').setup {
     error = { icon = '', cterm = 'bold' },
   },
 }
+
 require('transparent').setup {}
 require('live_server').setup {}
 require('markdown_preview').setup {
@@ -60,4 +62,5 @@ require('markdown_preview').setup {
   debounce_ms = 300,
 }
 require('typst-preview').setup {}
+require('better-ts-errors').setup {}
 require('Comment').setup {}
