@@ -48,21 +48,14 @@ local opts = {
     -- have a well standardized coding style. You can add additional
     -- languages here or re-enable it for the disabled ones.
     local disable_filetypes = { c = true, cpp = true, blade = true, twig = true, html = true, php = true }
+
     if disable_filetypes[vim.bo[bufnr].filetype] then
       return nil
-    else
-      return {
-        timeout_ms = 1000,
-        lsp_format = 'fallback',
-      }
     end
+
+    return { timeout_ms = 1000, lsp_format = 'fallback' }
   end,
-  formatters = {
-    mago = {
-      command = 'mago',
-      args = { 'format', '-i' },
-    },
-  },
+  formatters = custom_formatters,
   formatters_by_ft = formatters,
 }
 
