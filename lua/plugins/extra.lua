@@ -22,6 +22,7 @@ vim.pack.add {
   'https://github.com/nvim-neotest/nvim-nio',
 
   'https://github.com/adalessa/laravel.nvim',
+  'https://github.com/numToStr/Comment.nvim',
 }
 
 require('oil').setup {}
@@ -59,3 +60,4 @@ require('markdown_preview').setup {
   debounce_ms = 300,
 }
 require('typst-preview').setup {}
+require('Comment').setup {}
