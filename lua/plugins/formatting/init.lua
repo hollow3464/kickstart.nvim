@@ -62,5 +62,15 @@ local opts = {
 require('conform').setup(opts)
 
 vim.keymap.set('n', '<leader>f', function()
-  require('conform').format { async = true, lsp_format = 'fallback' }
+  local bufnr = vim.api.nvim_get_current_buf()
+  local ft = vim.bo[bufnr].filetype
+
+  local lsp_format = 'fallback'
+
+  local lsp_formatted = { php = true, go = true }
+  if lsp_formatted[ft] then
+    lsp_format = 'first'
+  end
+
+  require('conform').format { async = true, lsp_format }
 end, { desc = '[F]ormat buffer' })
